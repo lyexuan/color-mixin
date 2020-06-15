@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title></title>
+  <meta charset="utf-8">
+  <style>
+    body{
+      background: #333;
+    }
+    @keyframes rotateAnimate {
+      from {
+        transform: rotate(0);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    #canvas-container,
+    #canvas{
+      width: 320px;
+      height: 320px;
+    }
+    .animation{
+      animation: rotateAnimate 1s linear 0s infinite;
+    }
+  </style>
+  <script src="./lib/easeljs-NEXT.min.js"></script>
+  <script src="./lib/tweenjs-NEXT.min.js"></script>
+</head>
+
+<body>
+  <div>
+    <div id="canvas-container" class="animation">
+      <canvas id="canvas" width="320" height="320"></canvas>
+    </div>
+  </div>
+  <script>
+    class ColorMixin {
+      // 构造函数，初始化画布
+      constructor (props) {
+        const { r } = props
+        this.stage = new createjs.Stage('canvas')
+        this.r = r
+        this.angle = 2 * Math.PI / 7
+      }
+      // 绘制扇形
+      drawSector(startAngle = 0, color = '#ff0000') {
+        const r = this.r
+        const x = r
+        const y = r
+        const angle = this.angle
+        // 定义几何图形对象
+        const stage = this.stage
+        var shape = new createjs.Shape()
+        const g = new createjs.Graphics()
+        // 定义颜色
+        g.beginFill(color)
+        // 定圆心
+        g.moveTo(r, r)
+        // 画扇形
+        g.arc(x, y, r, startAngle, startAngle + angle, false)
+        
+        // 更新画布
+        shape.graphics = g
+        stage.addChild(shape)
+        stage.update()
+      }    
+      // 基础图形绘制
+      draw (offsetAngle = 0) {
+        const stage = this.stage
+        stage.clear()
+        const angle = this.angle
+        const colors = ['255, 0, 0', '255, 128, 0', '255, 255, 0', '0, 255, 0', '0, 255, 255', '0, 0, 255', '128, 0, 255']
+        colors.forEach((item, index) => {
+          this.drawSector(angle * index + offsetAngle, `rgb(${item})`)
+        })
+      }
+      // 开始旋转动画
+      startAnimate (speed = 10) {
+        const stage = this.stage
+        const interval = 50
+        const offsetAngle = 360 * speed / (1000 / interval)
+        let count = 0
+        // const rotation = this.rotation + 15
+        // this.rotation = rotation
+        // 速度，每秒钟转多少圈
+        // createjs.Tween.get(target, {override:true}).to({x:100})
+        // stage.rotation = rotation
+        setInterval(() => {
+          count = count + 1
+          this.draw(offsetAngle * count)
+        }, interval)
+      }
+    }
+
+    const colorMixin = new ColorMixin({
+      r: 160
+    })
+
+    colorMixin.draw()
+  </script>
+</body>
+
+</html>
